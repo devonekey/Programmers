@@ -1,0 +1,59 @@
+import kotlin.math.pow
+
+/**
+ * ## 종이접기
+ * #### 분류 : Summer/Winter Coding(2019)
+ * #### 난이도 : Level 3
+ * #### 풀이
+ * - 이전의 값을 참고하여 배열을 채워가는 문제이다.
+ * - 몇 데이터를 분석해보면 규칙이 드러나기에, 그대로 구현하면 된다.
+ * - 1. 가운데 값은 항상 0이다.
+ * - 2. 오른쪽 값은 가운데 위치(pivot)에서 같은 거리에 있는 왼쪽 값을 토대로
+ * (왼쪽 값이 0이면 오른쪽 값은 1, 왼쪽 값이 1이면 오른쪽 값은 0) 값이 설정된다.
+ */
+class Solution {
+    companion object {
+        fun solution(n: Int): IntArray {
+            val answer = IntArray((2.0.pow(n) - 1).toInt())
+
+            for (i in 0 until n) {
+                val mid = (2.0.pow(i) - 1).toInt().apply {
+                    answer[this] = 0
+                }
+                val last = mid * 2
+
+                for (j in 0 until mid) {
+                    answer[last - j] = if (answer[j] == 0) 1 else 0
+                }
+            }
+
+            return answer
+        }
+
+        @JvmStatic
+        fun main(args: Array<String>) {
+            solution(1).forEach {
+                print("$it,")
+            }
+            println()
+            // 0
+
+            solution(2).forEach {
+                print("$it,")
+            }
+            println()
+            // 0,0,1
+
+            solution(3).forEach {
+                print("$it,")
+            }
+            println()
+            // 0,0,1,0,0,1,1
+
+            solution(4).forEach {
+                print("$it,")
+            }
+            // 0,0,1,0,0,1,1,0,0,0,1,1,0,1,1
+        }
+    }
+}
