@@ -10,3 +10,6 @@ out/
 
 # Others
 **/.DS_Store
+
+# Secret cabinet
+cabinet/secret/
