@@ -1,0 +1,81 @@
+import java.util.*;
+
+/**
+ * <h1>의상</h1>
+ * <h5>분류: 해시</h5>
+ * <h5>난이도: Level 2</h5>
+ * <h5>풀이</h5>
+ * <ul>
+ * <li>옷의 종류에 따라 조합할 수 있는 옷의 가짓수를 찾는 문제이다.<br/>
+ * <li>처음에는 아래와 같은 방법으로 접근했다.
+ * <ol>
+ *     <li>옷의 종류에 따라 분류한다.</li>
+ *     <li>그 종류에 따른 수를 계산하다.</li>
+ *     <li>조합 알고리즘을 사용하여 나올 수 있는 경우의 수를 계산한다.</li>
+ * </ol>
+ * <li>1번을 제외한 모든 테스트 케이스를 통과했지만,
+ * 경우의 수를 계산하는 과정에서 시간 초과가 발생하였다.</li>
+ * <li>더 좋은 계산 방법을 찾지 못하고 과한 방법으로 풀었다.</li>
+ * </ul>
+ */
+public class Solution {
+    public static void main(String[] args) {
+        System.out.println("answer: " + solution(new String[][]{
+                {"yellow_hat", "headgear"},
+                {"blue_sunglasses", "eyewear"},
+                {"green_turban", "headgear"},
+        }));
+        System.out.println("answer: " + solution(new String[][]{
+                {"crow_mask", "face"},
+                {"blue_sunglasses", "face"},
+                {"smoky_makeup", "face"}
+        }));
+    }
+
+    public static int solution(String[][] clothes) {
+        int answer = 1;
+//        int answer = 0;
+        Map<String, Integer> closet = new HashMap<>();
+
+        for (String[] cloth: clothes) {
+            String type = cloth[1];
+            int count = closet.getOrDefault(type, 0);
+
+            closet.put(type, ++count);
+        }
+
+        List<Integer> values = new ArrayList<>(closet.values());
+
+        for (Integer v : values) {
+            answer *= (v + 1);
+        }
+
+//        for (int k = 1; k <= values.size(); k++) {
+//            answer += combinations(values, values.size(), k, 0, 0);
+//        }
+
+        return --answer;
+//        return answer;
+    }
+
+//    static int combinations(
+//            List<Integer> list,
+//            int n,
+//            int k,
+//            int start,
+//            int current
+//    ) {
+//        if (current == k) {
+//            return 1;
+//        }
+//
+//        int result = 0;
+//
+//        for (int i = start; i < n; i++) {
+//            result += list.get(i) * (current + 1 == k ? 1 :
+//                    combinations(list, n, k, i + 1, current + 1));
+//        }
+//
+//        return result;
+//    }
+}
