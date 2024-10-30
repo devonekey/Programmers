@@ -1,0 +1,97 @@
+import java.util.*;
+
+/**
+ * <h1>베스트 앨범</h1>
+ * <h5>분류: 해시</h5>
+ * <h5>난이도: Level 3</h5>
+ * <h5>풀이</h5>
+ * <ul>
+ * <li>가장 많이 재생된 장르, 가장 많이 재생된 횟수,
+ * 가장 낮은 고유 번호 순서로 최대 두 곡씩 찾는 문제이다.</li>
+ * <li>아래와 같은 방법으로 해결했다.</li>
+ * <ol>
+ *     <li>'장르'와 '재생 횟수'를 동시에 순회하면서 '장르'별로 '재생 횟수'를
+ *     합산하여 저장하고, '장르'별로 노래의 '고유 번호'와 '재생 횟수'를 저장한다.</li>
+ *     <li>가장 많이 재생된 '장르'를 '재생 횟수'별로 내림차순 정렬한다.</li>
+ *     <li>정렬된 '장르'를 순회하면서 노래를 '재생 횟수' 내림차순,
+ *     '고유 번호' 올림차순으로 정렬한다.</li>
+ *     <li>정렬된 노래의 '고유 번호'를 최대 두 곡씩 가져온다.</li>
+ * </ol>
+ * </ul>
+ */
+public class Solution {
+    public static void main(String[] args) {
+        int[] album = solution(
+                new String[]{"classic", "pop", "classic", "classic", "pop"},
+                new int[]{500, 600, 150, 800, 2500}
+        );
+
+        for (int a: album) {
+            System.out.print(a + ", ");
+        }
+    }
+
+    public static int[] solution(String[] genres, int[] plays) {
+        int[] answer = {};
+        Map<String, List<Song>> playList = new HashMap<>();
+        Map<String, Integer> bestPlay = new HashMap<>();
+
+        for (int i = 0; i < genres.length; i++) {
+            String genre = genres[i];
+            int play = plays[i];
+            List<Song> storedPlayList = playList.getOrDefault(genre, new ArrayList<>());
+            int storedBestPlay = bestPlay.getOrDefault(genre, 0);
+
+            storedPlayList.add(new Song(i, play));
+            playList.put(genre, storedPlayList);
+            bestPlay.put(genre, storedBestPlay + play);
+        }
+
+        String[] sortedGenre = new ArrayList<>(bestPlay.keySet()).toArray(new String[0]);
+
+        for (String genre: sortedGenre) {
+            System.out.print(genre + ", ");
+        }
+
+        System.out.println();
+
+        Arrays.sort(sortedGenre, (o1, o2) ->
+                bestPlay.get(o1) < bestPlay.get(o2) ? 1 : -1);
+
+        for (String genre: sortedGenre) {
+            System.out.print(genre + ", ");
+        }
+
+        List<Integer> indices = new ArrayList<>();
+
+        for (String genre: sortedGenre) {
+            Song[] list = playList.get(genre).toArray(new Song[0]);
+
+            Arrays.sort(list, (o1, o2) -> o1.play < o2.play ? 1 :
+                    o1.play > o2.play ? -1 : o1.index > o2.index ? 1 : -1);
+            indices.add(list[0].index);
+
+            if (list.length > 1) {
+                indices.add(list[1].index);
+            }
+        }
+
+        answer = new int[indices.size()];
+
+        for (int i = 0; i < answer.length; i++) {
+            answer[i] = indices.get(i);
+        }
+
+        return answer;
+    }
+
+    static class Song {
+        int index;
+        int play;
+
+        public Song(int index, int play) {
+            this.index = index;
+            this.play = play;
+        }
+    }
+}
