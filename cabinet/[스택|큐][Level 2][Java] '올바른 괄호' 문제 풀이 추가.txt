@@ -1,0 +1,39 @@
+/**
+ * <h1>올바른 괄호</h1>
+ * <h5>분류: 스택/큐</h5>
+ * <h5>난이도: Level 2</h5>
+ * <h5>풀이</h5>
+ * <ul>
+ * <li>괄호들이 올바르게 짝이 되는지를 묻는 문제이다.</li>
+ * <li>아래와 같은 방법으로 해결했다.</li>
+ * <ol>
+ *     <li>순회하면서 카운팅을 했고, 닫는 괄호가 더 많이 등장하는 경우에는 올바르지 않다고 판단한다.</li>
+ *     <li>또, 순회 후에 여는 괄호가 더 많이 등장하는 경우에도 올바르지 않다고 판단한다.</li>
+ * </ol>
+ * </ul>
+ */
+public class Solution {
+    public static void main(String[] args) {
+        System.out.println(solution("()()"));
+        System.out.println(solution("(())()"));
+        System.out.println(solution(")()("));
+        System.out.println(solution("(()("));
+    }
+
+    static boolean solution(String s) {
+        boolean answer = true;
+        int count = 0;
+
+        for (char c: s.toCharArray()) {
+            count += (c == '(' ? 1 : -1);
+
+            if (count < 0) {
+                return false;
+            }
+        }
+
+        answer = count == 0;
+
+        return answer;
+    }
+}
