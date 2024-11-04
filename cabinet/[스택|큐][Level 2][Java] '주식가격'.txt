@@ -1,0 +1,81 @@
+import java.util.*;
+
+/**
+ * <h1>주식가격</h1>
+ * <h5>분류: 스택/큐</h5>
+ * <h5>난이도: Level 2</h5>
+ * <h5>풀이</h5>
+ * <ul>
+ * <li>시간에 따른 주식 가격이 주어졌을 때, 몇 초간 가격 방어가 됐는지를 묻는 문제이다.</li>
+ * <li>아래와 같은 방법으로 해결했다.</li>
+ * <ol>
+ *     <li>주식 가격을 순회한다.</li>
+ *     <li>현재 가리키는 주식 가격이 이전의 주식 가격과 비교한다.</li>
+ *     <li>가격이 낮으면 역행하여 이전의 주식 가격과 얼마나 가격 방어가 됐는지 시간 등을 저장한다.</li>
+ *     <li>순회 이후, 현재 시간까지 가격 방어가 된 주식 가격과 시간을 저장한다.</li>
+ *     <li>저장한 내용들을 색인 별로 정렬하여 소요된 시간들을 출력한다.</li>
+ * </ol>
+ * </ul>
+ */
+public class Solution {
+    public static void main(String[] args) {
+        int[] secondArray = solution(new int[]{1, 2, 3, 2, 3});
+
+        for (int second: secondArray) {
+            System.out.print(second + ", ");
+        }
+    }
+
+    public static int[] solution(int[] prices) {
+        int[] answer = {};
+        Stack<Stock> stockStack = new Stack<>();
+        List<Stock> finishedList = new ArrayList<>();
+        int stockIndex = 0;
+
+        do {
+            Stock stock = new Stock(stockIndex, prices[stockIndex]);
+
+            if (stockStack.isEmpty() || stock.value >= stockStack.peek().value) {
+                stockStack.push(stock);
+
+                stockIndex++;
+            } else {
+                Stock popped = stockStack.pop();
+                popped.time = stockIndex - popped.index;
+
+                finishedList.add(popped);
+            }
+        } while (stockIndex < prices.length);
+
+        stockIndex--;
+
+        while (!stockStack.isEmpty()) {
+            Stock popped = stockStack.pop();
+            popped.time = stockIndex - popped.index;
+
+            finishedList.add(popped);
+        }
+
+        int size = finishedList.size();
+        answer = new int[size];
+
+        finishedList.sort(Comparator.comparingInt(o -> o.index));
+
+        for (int i = 0; i < size; i++) {
+            answer[i] = finishedList.get(i).time;
+        }
+
+        return answer;
+    }
+
+    public static class Stock {
+        int index;
+        int value;
+        int time;
+
+        public Stock(int index, int value) {
+            this.index = index;
+            this.value = value;
+        }
+    }
+}
