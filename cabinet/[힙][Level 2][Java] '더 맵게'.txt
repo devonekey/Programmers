@@ -1,0 +1,43 @@
+import java.util.*;
+
+/**
+ * <h1>더 맵게</h1>
+ * <h5>분류: 힙</h5>
+ * <h5>난이도: Level 2</h5>
+ * <h5>풀이</h5>
+ * <ul>
+ * <li>가장 낮은 두 맵기를 선택하여 섞기를 반복하고,
+ * 특정 맵기 이상에 도달했을 때 섞은 횟수를 출력하는 문제이다.</li>
+ * <li>아래와 같은 방법으로 해결했다.</li>
+ * <ol>
+ *     <li>우선 순위 큐에서 첫 번째 맵기를 꺼내고 그 맵기가 특정 맵기 미만인지 확인한다.</li>
+ *     <li>두 번째 맵기가 있다면 꺼내고 첫 번째 맵기와 섞는다.</li>
+ *     <li>섞은 맵기를 다시 우선 순위 큐에 넣고 앞선 과정들을 반복한다.</li>
+ *     <li>맵기가 특정 맵기 이상이거나 두 번째 맵기가 없어서 더 이상 섞을 수 없다면, 그동안 섞은 횟수를 출력한다.</li>
+ * </ol>
+ * </ul>
+ */
+public class Solution {
+    public static void main(String[] args) {
+        System.out.println(solution(new int[]{1, 2, 3, 9, 10, 12}, 7));
+    }
+
+    public static int solution(int[] scoville, int K) {
+        int answer = 0;
+        PriorityQueue<Integer> foodQueue = new PriorityQueue<>();
+
+        for (int s: scoville) {
+            foodQueue.add(s);
+        }
+
+        Integer lowest;
+
+        for (lowest = foodQueue.poll();
+             lowest != null && lowest < K && !foodQueue.isEmpty();
+             foodQueue.add(lowest + 2 * foodQueue.poll()), answer++, lowest = foodQueue.poll());
+
+        answer = lowest != null && lowest >= K ? answer : -1;
+
+        return answer;
+    }
+}
