@@ -1,0 +1,59 @@
+import java.util.*;
+
+/**
+ * <h1>이중우선순위큐</h1>
+ * <h5>분류: 힙</h5>
+ * <h5>난이도: Level 3</h5>
+ * <h5>풀이</h5>
+ * <ul>
+ * <li>연산이 주어질 때마다 추가, 삭제를 하여 최종적으로 남는 최댓값과 최솟값을 가져오는 문제이다.</li>
+ * <li>아래와 같은 방법으로 해결했다.</li>
+ * <ol>
+ *     <li>추가 명령어가 나오면 오름차순, 내림차순 정렬이 적용된 큐에 추가한다.</li>
+ *     <li>최댓값 제거 명령이 나오면 내림차순 정렬이 적용된 큐로부터 제거하고,
+ *     그 큐를 오름차순 정렬이 적용된 큐에 덮어쓴다.</li>
+ *     <li>반대의 명령에는 반대로 적용한다.</li>
+ * </ol>
+ * </ul>
+ */
+public class Solution {
+    public static void main(String[] args) {
+        int[] result = solution(new String[]{"I 16", "I -5643", "D -1", "D 1", "D 1", "I 123", "D -1"});
+
+        System.out.println("max: " + result[0] + ", min: " + result[1]);
+
+        result = solution(new String[]{"I -45", "I 653", "D 1", "I -642", "I 45", "I 97", "D 1", "D -1", "I 333"});
+
+        System.out.println("max: " + result[0] + ", min: " + result[1]);
+    }
+
+    public static int[] solution(String[] operations) {
+        int[] answer = new int[2];
+        Queue<Integer> forward = new PriorityQueue<>(Integer::compare);
+        Queue<Integer> backward = new PriorityQueue<>((o1, o2) -> Integer.compare(o2, o1));
+
+        for (String o: operations) {
+            if (o.startsWith("I ")) {
+                int num = Integer.parseInt(o.split("I ")[1]);
+
+                forward.add(num);
+                backward.add(num);
+            } else if (o.equals("D -1")) {
+                forward.poll();
+                backward.clear();
+                backward.addAll(forward);
+            } else if (o.equals("D 1")) {
+                backward.poll();
+                forward.clear();
+                forward.addAll(backward);
+            }
+        }
+
+        Integer unboxedMin = forward.peek();
+        Integer unboxedMax = backward.peek();
+        answer[0] = unboxedMax != null ? unboxedMax : 0;
+        answer[1] = unboxedMin != null ? unboxedMin : 0;
+
+        return answer;
+    }
+}
