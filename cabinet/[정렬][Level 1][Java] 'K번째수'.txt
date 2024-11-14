@@ -1,0 +1,45 @@
+import java.util.*;
+
+/**
+ * <h1>K번째수</h1>
+ * <h5>분류: 정렬</h5>
+ * <h5>난이도: Level 1</h5>
+ * <h5>풀이</h5>
+ * <ul>
+ * <li>숫자 배열과 command가 주어질 때 배열로부터 command 범위의 배열을 추출한 뒤
+ * 정렬하여 k 번째 요소를 찾는 문제이다.</li>
+ * <li>copyOfRange 함수를 알았다면, 더 간결하게 구현할 수 있다.</li>
+ * </ul>
+ */
+public class Solution {
+    public static void main(String[] args) {
+        int[] result = solution(new int[]{1, 5, 2, 6, 3, 7, 4},
+                new int[][]{{2, 5, 3}, {4, 4, 1}, {1, 7, 3}});
+
+        for (int r: result) {
+            System.out.println(r);
+        }
+    }
+
+    public static int[] solution(int[] array, int[][] commands) {
+        int[] answer = new int[commands.length];
+        List<Integer> list = new ArrayList<>();
+
+        for (int num: array) {
+            list.add(num);
+        }
+
+        for (int index = 0; index < commands.length; index++) {
+            int i = commands[index][0] - 1;
+            int j = commands[index][1];
+            int k = commands[index][2] - 1;
+            List<Integer> subList = new ArrayList<>(list.subList(i, j));
+
+            subList.sort(Comparator.comparingInt((o) -> o));
+
+            answer[index] = subList.get(k);
+        }
+
+        return answer;
+    }
+}
