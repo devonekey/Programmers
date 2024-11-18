@@ -1,0 +1,85 @@
+import java.util.*;
+
+/**
+ * <h1>모의고사</h1>
+ * <h5>분류: 완전탐색</h5>
+ * <h5>난이도: Level 1</h5>
+ * <h5>풀이</h5>
+ * <ul>
+ * <li>주어진 답안을 특정 패턴으로 매칭했을 때 가장 많이 적중한 학생 번호를 구하는 문제이다.</li></li>
+ * <li>아래와 같은 방법으로 해결했다.</li>
+ * <ol>
+ *     <li>패턴과 답안을 같이 순회하면서 같은지 비교하고 같으면 적중했다고 간주한다.</li>
+ *     <li>가장 많이 적중한 학생 번호를 찾는다.</li>
+ * </ol>
+ * </ul>
+ */
+public class Solution {
+    public static void main(String[] args) {
+        int[] indices = solution(new int[]{1, 2, 3, 4, 5});
+
+        for (int index : indices) {
+            System.out.print(index + ", ");
+        }
+
+        System.out.println();
+
+        indices = solution(new int[]{1, 3, 2, 4, 2});
+
+        for (int index : indices) {
+            System.out.print(index + ", ");
+        }
+
+        System.out.println();
+    }
+
+    public static int[] solution(int[] answers) {
+        int[] answer = {};
+        Queue<Student> students = new PriorityQueue<>((o1, o2) -> Integer.compare(o2.count, o1.count));
+
+        students.add(new Student(1, new int[]{1, 2, 3, 4, 5}, answers));
+        students.add(new Student(2, new int[]{2, 1, 2, 3, 2, 4, 2, 5}, answers));
+        students.add(new Student(3, new int[]{3, 3, 1, 1, 2, 2, 4, 4, 5, 5}, answers));
+
+        Student student = students.remove();
+        int count = student.count;
+        List<Integer> indices = new ArrayList<>();
+
+        indices.add(student.index);
+
+        while (!students.isEmpty()) {
+            Student s = students.poll();
+
+            if (s.count == count) {
+                indices.add(s.index);
+            } else {
+                break;
+            }
+        }
+
+        answer = new int[indices.size()];
+
+        for (int i = 0; i < indices.size(); i++) {
+            answer[i] = indices.get(i);
+        }
+
+        Arrays.sort(answer);
+
+        return answer;
+    }
+
+    static class Student {
+        int index;
+        int count = 0;
+
+        public Student(int index, int[] pattern, int[] answer) {
+            this.index = index;
+
+            for (int i = 0; i < answer.length; i++) {
+                if (pattern[i % pattern.length] == answer[i]) {
+                    count++;
+                }
+            }
+        }
+    }
+}
