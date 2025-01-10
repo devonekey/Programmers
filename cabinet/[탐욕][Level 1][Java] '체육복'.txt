@@ -1,0 +1,99 @@
+import java.util.*;
+
+/**
+ * <h1>체육복</h1>
+ * <h5>분류: 탐욕</h5>
+ * <h5>난이도: Level 1</h5>
+ * <h5>풀이</h5>
+ * <ul>
+ * <li>가능한 많은 학생들이 체육복을 갖게 만드는 문제이다.</li>
+ * <li>당장 눈앞의 문제를 해결하는 방식으로 접근했다.</li>
+ * <ol>
+ *     <li>본인이 체육복을 도둑맞았으나 여분을 가지고 있는 경우, 잃지는 않았지만 여분이 없다고 간주한다.</li>
+ *     <li>도둑맞은 학생 뒤에 있는 학생이 체육복을 빌려줄 여력이 된다면 빌려준다.
+ *     (빌린 학생은 체육복을 잃지 않은 것으로 되고, 빌려준 학생은 여분이 없어지는 것으로 된다.)</li>
+ *     <li>도둑맞은 학생 뒤에 있는 학생이 체육복을 빌려줄 여력이 되지 않는다면, 앞의 학생에게 빌려본다.</li>
+ *     <li>최종적으로 체육복을 가진 학생 수를 구한다.</li>
+ * </ol>
+ * </ul>
+ */
+public class Solution {
+    public static void main(String[] args) {
+        System.out.println(solution(5, new int[]{2, 4}, new int[]{1, 3, 5}));
+        System.out.println(solution(5, new int[]{2, 4}, new int[]{3}));
+        System.out.println(solution(3, new int[]{3}, new int[]{1}));
+    }
+
+    public static int solution(int n, int[] lost, int[] reserve) {
+        int answer = 0;
+        List<Boolean> lostList = Arrays.asList(new Boolean[n]);
+        List<Boolean> reserveList = Arrays.asList(new Boolean[n]);
+        int lostCount = lost.length;
+
+        for (int i = 0; i < n; i++) {
+            lostList.set(i, false);
+        }
+
+        for (int i = 0; i < n; i++) {
+            reserveList.set(i, false);
+        }
+
+        for (int l : lost) {
+            lostList.set(l - 1, true);
+        }
+
+        for (int r : reserve) {
+            if (lostList.get(r - 1)) {
+                lostCount--;
+
+                lostList.set(r - 1, false);
+
+                continue;
+            }
+
+            reserveList.set(r - 1, true);
+        }
+
+        Arrays.sort(lost);
+
+        for (int target : lost) {
+            int cur = target - 1;
+
+            if (!lostList.get(cur)) {
+                continue;
+            }
+
+            if (target > 1) {
+                int prev = cur - 1;
+                boolean prevLost = lostList.get(prev);
+                boolean prevReserve = reserveList.get(prev);
+
+                if (!prevLost && prevReserve) {
+                    lostCount--;
+
+                    lostList.set(cur, false);
+                    reserveList.set(prev, false);
+
+                    continue;
+                }
+            }
+
+            if (target < n) {
+                int next = cur + 1;
+                boolean nextLost = lostList.get(next);
+                boolean nextReserve = reserveList.get(next);
+
+                if (!nextLost && nextReserve) {
+                    lostCount--;
+
+                    lostList.set(cur, false);
+                    reserveList.set(next, false);
+                }
+            }
+        }
+
+        answer = n - lostCount;
+
+        return answer;
+    }
+}
