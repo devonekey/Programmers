@@ -1,0 +1,77 @@
+/**
+ * <h1>조이스틱</h1>
+ * <h5>분류: 탐욕</h5>
+ * <h5>난이도: Level 2</h5>
+ * <h5>풀이</h5>
+ * <ul>
+ * <li>주어진 문자열을 최소한의 조이스틱 움직임으로 만들고 그 값을 출력하는 문제이다.</li>
+ * <li>아래와 같은 방법으로 해결했다.</li>
+ * <ol>
+ *     <li>'A' 문자는 무시한다.</li>
+ *     <li>특정 위치에서 다른 문자를 발견하면, 최초 위치에서 정방향으로 움직이는 것이 유리한지,
+ *     역방향으로 움직이는 것이 유리한지를 판단하여 수평 움직임을 계산한다.</li>
+ *     <li>수직 움직임은 문자가 갖는 값의 차이로 계산한다.</li>
+ * </ol>
+ * </ul>
+ */
+public class Solution {
+    public static void main(String[] args) {
+        System.out.println(solution("BAAAAABAA")); // 5
+        System.out.println(solution("BBBABAABABABB")); // 20
+        System.out.println(solution("BBABAAAAAAB")); // 9
+        System.out.println(solution("BABBAABB")); // 11
+        System.out.println(solution("BBAAAAAAABAB")); // 9
+        System.out.println(solution("BAABBAAA")); // 7
+        System.out.println(solution("BAABAAAA")); // 5
+        System.out.println(solution("A")); // 0
+        System.out.println(solution("AAA")); // 0
+        System.out.println(solution("JEROEN")); // 56
+        System.out.println(solution("JAN")); // 23
+    }
+
+    public static int solution(String name) {
+        int answer = 0;
+        boolean initialized = false;
+        int prev = 0;
+        int min = name.length() - 1;
+
+        for (int i = 0; i < name.length(); i++) {
+            if (name.charAt(i) == 'A') {
+                continue;
+            }
+
+            if (!initialized) {
+                prev = i;
+                initialized = true;
+            }
+
+            int path1 = prev * 2 + name.length() - i;
+            int path2 = (name.length() - i) * 2 + prev;
+            boolean found = false;
+
+            for (int j = i + 1; j < name.length(); j++) {
+                if (name.charAt(j) != 'A') {
+                    found = true;
+
+                    break;
+                }
+            }
+
+            if (!found) {
+                min = Math.min(i, min);
+            }
+
+            min = Math.min(path1, min);
+            min = Math.min(path2, min);
+            prev = i;
+        }
+
+        answer = initialized ? min : 0;
+
+        for (char c : name.toCharArray()) {
+            answer += Math.min(c - 'A', 'Z' - c + 1);
+        }
+
+        return answer;
+    }
+}
