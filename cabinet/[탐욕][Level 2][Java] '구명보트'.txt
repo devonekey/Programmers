@@ -1,3 +1,20 @@
+import java.util.*;
+
+/**
+ * <h1>구명보트</h1>
+ * <h5>분류: 탐욕</h5>
+ * <h5>난이도: Level 2</h5>
+ * <h5>풀이</h5>
+ * <ul>
+ * <li>무게가 제한된 보트에 최대 2명의 사람을 태워 최소 횟수로 구출하는 문제이다.</li>
+ * <li>아래와 같은 방법으로 해결했다.</li>
+ * <ol>
+ *     <li>주어진 배열을 역순으로 정렬한다.</li>
+ *     <li>배열의 첫번째 요소와 마지막 요소의 합이 한계치 이하라면 구출하고
+ *     한계치 이상이라면 첫번째 요소만 구출한다.</li>
+ * </ol>
+ * </ul>
+ */
 public class Solution {
     public static void main(String[] args) {
         System.out.println(solution(new int[] {70, 50, 80, 50}, 100));
@@ -6,34 +23,26 @@ public class Solution {
 
     public static int solution(int[] people, int limit) {
         int answer = 0;
-        boolean[] saved = new boolean[people.length];
 
-        for (int i = 0; i < people.length; i++) {
-            if (saved[i]) {
-                continue;
-            }
+        List<Integer> list = new ArrayList<>();
 
-            int current = people[i];
-            int index = -1;
+        for (int p : people) {
+            list.add(p);
+        }
 
-            for (int j = i + 1; j < people.length; j++) {
-                if (saved[j]) {
-                    continue;
-                }
+        list.sort((o1, o2) -> Integer.compare(o2, o1));
 
-                int sum = people[i] + people[j];
+        for (int i = 0, j = list.size() - 1; i <= j; i++) {
+            if (i == j) {
+                answer++;
 
-                if (sum <= limit && sum > current) {
-                    current = sum;
-                    index = j;
-                }
+                break;
             }
 
             answer++;
-            saved[i] = true;
 
-            if (index != -1) {
-                saved[index] = true;
+            if (list.get(i) + list.get(j) <= limit) {
+                j--;
             }
         }
 
