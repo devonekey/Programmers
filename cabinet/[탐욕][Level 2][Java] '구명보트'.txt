@@ -1,0 +1,42 @@
+public class Solution {
+    public static void main(String[] args) {
+        System.out.println(solution(new int[] {70, 50, 80, 50}, 100));
+        System.out.println(solution(new int[] {70, 80, 50}, 100));
+    }
+
+    public static int solution(int[] people, int limit) {
+        int answer = 0;
+        boolean[] saved = new boolean[people.length];
+
+        for (int i = 0; i < people.length; i++) {
+            if (saved[i]) {
+                continue;
+            }
+
+            int current = people[i];
+            int index = -1;
+
+            for (int j = i + 1; j < people.length; j++) {
+                if (saved[j]) {
+                    continue;
+                }
+
+                int sum = people[i] + people[j];
+
+                if (sum <= limit && sum > current) {
+                    current = sum;
+                    index = j;
+                }
+            }
+
+            answer++;
+            saved[i] = true;
+
+            if (index != -1) {
+                saved[index] = true;
+            }
+        }
+
+        return answer;
+    }
+}
