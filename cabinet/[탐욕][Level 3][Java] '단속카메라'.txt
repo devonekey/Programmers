@@ -1,0 +1,51 @@
+import java.util.*;
+
+/**
+ * <h1>단속카메라</h1>
+ * <h5>분류: 탐욕</h5>
+ * <h5>난이도: Level 3</h5>
+ * <h5>풀이</h5>
+ * <ul>
+ * <li>주어진 모든 차량 이동 경로에서 최소한 카메라를 한 대 이상 만나게 할 때 그 카메라의 최솟값을 구하는 문제이다.</li>
+ * <li>아래와 같은 방법으로 해결했다.</li>
+ * <ol>
+ *     <li>진입 지점을 기준으로 오름차순 정렬한다.</li>
+ *     <li>처음 진출 지점에 카메라를 설치한다.</li>
+ *     <li>이동 경로를 순회하면서 카메라 위치와 특정 이동 경로의 진출 지점 중에 뒤쳐지는 쪽으로 카메라의 위치를 조정한다.</li>
+ *     <li>특정 이동 경로의 진입 지점이 카메라 위치보다 앞선다면, 카메라를 설치하고 위 과정을 반복한다.</li>
+ * </ol>
+ * </ul>
+ */
+public class Solution {
+    public static void main(String[] args) {
+        System.out.println(solution(new int[][]{{-20, -15}, {-14, -5}, {-18, -13}, {-5, -3}}));
+    }
+
+    public static int solution(int[][] routes) {
+        int answer = 0;
+        int[] camera = null;
+
+        Arrays.sort(routes, Comparator.comparingInt((int[] o) -> o[0]));
+
+        for (int[] route : routes) {
+            int in = route[0], out = route[1];
+
+            if (camera == null) {
+                answer++;
+                camera = new int[]{in, out};
+
+                continue;
+            }
+
+            if (in > camera[1]) {
+                answer++;
+                camera = new int[]{in, out};
+            } else {
+                camera[0] = in;
+                camera[1] = Math.min(camera[1], out);
+            }
+        }
+
+        return answer;
+    }
+}
