@@ -1,0 +1,74 @@
+import java.util.*;
+
+/**
+ * <h1>N으로 표현</h1>
+ * <h5>분류: 동적계획법</h5>
+ * <h5>난이도: Level 3</h5>
+ * <h5>풀이</h5>
+ * <ul>
+ * <li>주어진 N과 사칙연산을 이용하여 number를 만들 때, 필요한 N의 최소 개수를 구하는 문제이다.</li>
+ * <li>특정 수에서 N이 몇개가 필요한지 계산하는 방법으로는 패턴을 찾기엔 패턴이 보이지 않아 어렵다.</li>
+ * <li>그래서 생각을 달리하여 아래와 같은 방법으로 해결했다.</li>
+ * <ol>
+ *     <li>한 자리의 N으로 만들 수 있는 수는 단 N이고, 한 자리 집합이다.</li>
+ *     <li>두 자리의 N으로 만들 수 있는 수는 한 자리 집합과 같은 한 자리 집합의 사칙연산 결과이며, NN도 포함한다.</li>
+ *     <li>세 자리의 N으로 만들 수 있는 수는 한 자리 집합과 두 자리 집합의 사칙연산 결과에,
+ *     두 자리 집합과 한 자리 집합의 사칙연산 결과이며, NNN도 포함한다.</li>
+ *     <li>이런 방법으로 여덟 자리의 집합까지 만든다.</li>
+ *     <li>집합들을 순회하면서 number가 속한 최초의 집합을 찾아낸다.</li>
+ * </ol>
+ * </ul>
+ */
+public class Solution {
+    public static void main(String[] args) {
+        System.out.println(solution(5, 12));
+        System.out.println(solution(2, 11));
+    }
+
+    public static int solution(int N, int number) {
+        int answer = -1;
+
+        Map<Integer, Set<Integer>> map = new HashMap<>();
+        Set<Integer> set;
+
+        for (int i = 0; i < 8; i++) {
+            set = new HashSet<>();
+
+            for (int j = 0; j < i; j++) {
+                Set<Integer> firstSet = map.get(j);
+                Set<Integer> secondSet = map.get((i - 1) - j);
+
+                for (int first : firstSet) {
+                    for (int second : secondSet) {
+                        set.add(first + second);
+
+                        if (first > second) {
+                            set.add(first - second);
+                        }
+
+                        set.add(first * second);
+
+                        if (second > 1 && first / second > 0) {
+                            set.add(first / second);
+                        }
+                    }
+                }
+            }
+
+            set.add(Integer.parseInt("11111111".substring(0, i + 1)) * N);
+            map.put(i, set);
+        }
+
+        for (int i = 0; i < 8; i++) {
+            set = map.get(i);
+
+            if (set.contains(number)) {
+                answer = i + 1;
+
+                break;
+            }
+        }
+
+        return answer;
+    }
+}
