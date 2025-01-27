@@ -1,0 +1,49 @@
+/**
+ * <h1>등굣길</h1>
+ * <h5>분류: 동적계획법</h5>
+ * <h5>난이도: Level 3</h5>
+ * <h5>풀이</h5>
+ * <ul>
+ * <li>(1, 1) 위치에서 (m, n) 위치로 이동 가능한 경우의 수를 구하는 문제이다.</li>
+ * <li>아래와 같은 방법으로 해결했다.</li>
+ * <ol>
+ *     <li>(1, 1) 위치에서 이동 가능한 경우의 수는 1이다.</li>
+ *     <li>주어진 위치들을 순회하면서 특정 위치에서 왼쪽과 위쪽 위치의 이동 가능한 경우의 수를 합산한다.</li>
+ *     <li>만약 현재의 좌표가 이동할 수 없는 장애물이라면, 합산하지 않고 건너 뛴다.</li>
+ *     <li>만약 현재의 좌표에서 왼쪽이나 위쪽 위치가 없거나 장애물이라면 0으로 간주한다.</li>
+ *     <li>합산할 때마다 항상 1,000,000,007을 나누어 오버플로우가 발생하지 않도록 만든다.</li>
+ *     <li>위 과정을 반복하고 (m, n) 위치의 이동 가능한 경우의 수를 반환한다.</li>
+ * </ol>
+ * </ul>
+ */
+public class Solution {
+    public static void main(String[] args) {
+        System.out.println(solution(4, 3, new int[][]{{2, 2}}));
+    }
+
+    public static int solution(int m, int n, int[][] puddles) {
+        int answer = 0;
+        int[][] map = new int[n][m];
+        map[0][0] = 1;
+
+        for (int[] p : puddles) {
+            map[p[1] - 1][p[0] - 1] = -1;
+        }
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (map[i][j] == -1 || (i == 0 && j == 0)) {
+                    continue;
+                }
+
+                int left = j == 0 || map[i][j - 1] == -1 ? 0 : map[i][j - 1];
+                int top = i == 0 || map[i - 1][j] == -1 ? 0 : map[i - 1][j];
+                map[i][j] = (left + top) % 1_000_000_007;
+            }
+        }
+
+        answer = map[n - 1][m - 1];
+
+        return answer;
+    }
+}
