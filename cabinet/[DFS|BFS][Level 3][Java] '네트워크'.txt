@@ -1,0 +1,60 @@
+import java.util.*;
+
+/**
+ * <h1>네트워크</h1>
+ * <h5>분류: 깊이/너비 우선 탐색</h5>
+ * <h5>난이도: Level 3</h5>
+ * <h5>풀이</h5>
+ * <ul>
+ * <li>컴퓨터간 연결 정보가 주어질 때 서로 연결되는 컴퓨터 네트워크의 수를 구하는 문제이다. </li>
+ * <li>추가하려는 연결 정보가 있으면, 네트워크들을 순회하면서 연결 가능한 모든 네트워크를 찾아 병합하는 방법으로 해결했다.</li>
+ * </ul>
+ */
+public class Solution {
+    public static void main(String[] args) {
+        System.out.println(solution(3, new int[][]{{1, 1, 0}, {1, 1, 0}, {0, 0, 1}}));
+        System.out.println(solution(3, new int[][]{{1, 1, 0}, {1, 1, 1}, {0, 1, 1}}));
+    }
+
+    public static int solution(int n, int[][] computers) {
+        int answer = 0;
+        Map<Integer, Set<Integer>> networks = new HashMap<>();
+        int key = 0;
+
+        for (int[] computer : computers) {
+            Set<Integer> keySet = new HashSet<>();
+
+            for (int i = 0; i < computer.length; i++) {
+                if (computer[i] == 1) {
+                    for (int k : networks.keySet()) {
+                        if (networks.get(k).contains(i)) {
+                            keySet.add(k);
+                        }
+                    }
+                }
+            }
+
+            Set<Integer> network = new HashSet<>();
+
+            for (int k : keySet) {
+                network.addAll(networks.get(k));
+            }
+
+            for (int k : keySet) {
+                networks.remove(k);
+            }
+
+            for (int i = 0; i < computer.length; i++) {
+                if (computer[i] == 1) {
+                    network.add(i);
+                }
+            }
+
+            networks.put(key++, network);
+        }
+
+        answer = networks.size();
+
+        return answer;
+    }
+}
