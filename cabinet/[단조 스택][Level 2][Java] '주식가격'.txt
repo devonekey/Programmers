@@ -1,0 +1,49 @@
+import java.util.*;
+
+/**
+ * <h1>주식가격</h1>
+ * <h5>분류: 단조 스택</h5>
+ * <h5>난이도: Level 2</h5>
+ * <h5>풀이</h5>
+ * <ul>
+ * <li>시간에 따른 주식 가격이 주어졌을 때, 몇 초간 가격 방어가 됐는지를 묻는 문제이다.</li>
+ * <li>아래와 같은 방법으로 해결했다.</li>
+ * <ol>
+ *     <li>주식 가격을 순회한다.</li>
+ *     <li>stack이 비어있지 않다면, 현재 값과 stack 최상위의 값이 가리키는 값을 비교한다.</li>
+ *     <li>현재 값이 크다면 stack에서 값을 꺼내고, 그 값이 가리키는 새 배열의 위치에 가격을 방어한 시간을 넣는다.</li>
+ *     <li>위 과정을 stack이 모두 비워지거나 현재 값이 작을 때까지 반복한다.</li>
+ *     <li>새 배열에 최대로 방어할 수 있는 시간을 넣고, stack에 현재 값의 위치를 추가한다.</li>
+ *     <li>위 과정을 주어진 배열의 길이 만큼 반복한다.</li>
+ * </ol>
+ * </ul>
+ */
+public class Solution {
+    public static void main(String[] args) {
+        int[] answer = solution(new int[]{1, 2, 3, 2, 3});
+
+        for (int a : answer) {
+            System.out.print(a + ", ");
+        }
+    }
+
+    public static int[] solution(int[] prices) {
+        int[] answer = new int[prices.length];
+        Stack<Integer> indices = new Stack<>();
+
+        for (int i = 0; i < prices.length; i++) {
+            int price = prices[i];
+
+            while (!indices.isEmpty() && price < prices[indices.peek()]) {
+                int index = indices.pop();
+                answer[index] = i - index;
+            }
+
+            answer[i] = prices.length - (i + 1);
+
+            indices.push(i);
+        }
+
+        return answer;
+    }
+}
