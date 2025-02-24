@@ -1,21 +1,21 @@
 import java.util.*;
 
 /**
- * <h1>기능 개발</h1>
- * <h5>분류: 스택/큐</h5>
+ * <h1>기능개발</h1>
+ * <h5>분류: 스택/큐, 단조 스택</h5>
  * <h5>난이도: Level 2</h5>
  * <h5>풀이</h5>
  * <ul>
- * <li>배열의 데이터가 앞에서 부터 특정 조건을 넘어가면 카운팅하여
+ * <li>배열의 데이터가 앞에서 부터 특정 조건을 넘어가면 카운팅하고,
  * 모든 데이터들이 조건을 만족할 때 카운팅했던 것들을 출력하는 문제이다.</li>
  * <li>아래와 같은 방법으로 해결했다.</li>
  * <ol>
- *     <li>'progress'를 증가시킨다.</li>
- *     <li>만약 증가된 'progress'가 조건을 만족하면, 카운팅한다.</li>
- *     <li>다음 'progress'에서 카운팅할 수 없으면, 앞에서 부터 순차적으로 카운팅했던 것들을 저장한다.</li>
- *     <li>카운팅한 것들을 다시 0으로 초기화한다.</li>
+ *     <li>주어진 데이터를 순회하면서 완료까지 걸리는 날짜를 계산한다.</li>
+ *     <li>계산한 날짜가 queue에 쌓인 첫번째 날짜보다 더 크다면, queue의 크기만큼 한꺼번에 배포됐다고 간주한다.</li>
+ *     <li>그리고 계산한 날짜를 queue에 추가한다.</li>
+ *     <li>위 과정을 반복한다.</li>
+ *     <li>모두 순회하고 배포되지 않은 크기만큼 한꺼번에 배포됐다고 간주한다.</li>
  * </ol>
- * <li>출제 의도는 큐를 이용하는 것이지만 어렵게 돌아갔다.</li>
  * </ul>
  */
 public class Solution {
@@ -42,44 +42,29 @@ public class Solution {
 
     public static int[] solution(int[] progresses, int[] speeds) {
         int[] answer = {};
-        int progressesLength = progresses.length;
-        int distributedCount = 0;
-        int currentCount = 0;
-        List<Integer> distributedList = new ArrayList<>();
+        Queue<Integer> queue = new LinkedList<>();
+        List<Integer> list = new ArrayList<>();
+        int remains = progresses.length;
 
-        do {
-            for (int i = distributedCount; i < progressesLength; i++) {
-                progresses[i] += speeds[i];
+        for (int i = 0; i < progresses.length; i++) {
+            int completeDays = (int) Math.ceil((100F - progresses[i]) / speeds[i]);
 
-                if (progresses[i] >= 100) {
-                    currentCount++;
+            if (!queue.isEmpty() && completeDays > queue.peek()) {
+                remains -= queue.size();
 
-                    if (distributedCount + currentCount == progressesLength) {
-                        distributedList.add(currentCount);
-
-                        distributedCount += currentCount;
-
-                        break;
-                    }
-
-                    continue;
-                } else if (currentCount > 0 && distributedCount + currentCount == i) {
-                    distributedList.add(currentCount);
-
-                    distributedCount += currentCount;
-                }
-
-                currentCount = 0;
+                list.add(queue.size());
+                queue.clear();
             }
 
-            currentCount = 0;
-        } while(distributedCount < progressesLength);
+            queue.add(completeDays);
+        }
 
-        int distributedListSize = distributedList.size();
-        answer = new int[distributedListSize];
+        list.add(remains);
 
-        for (int i = 0; i < distributedListSize; i++) {
-            answer[i] = distributedList.get(i);
+        answer = new int[list.size()];
+
+        for (int i = 0; i < list.size(); i++) {
+            answer[i] = list.get(i);
         }
 
         return answer;
