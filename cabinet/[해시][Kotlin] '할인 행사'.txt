@@ -1,0 +1,81 @@
+/**
+ * # 할인 행사
+ * ##### 분류: 해시
+ * ##### 언어: Kotlin
+ * ##### 풀이
+ *
+ * 구매하려는 품목과 수량, 품목 판매 정보가 주어질 때,
+ * 10일 연속으로 모든 품목 구매할 수 있는 날짜들을 세는 문제이다.
+ *
+ * 1. 구매하려는 품목과 수량을 매핑한다.
+ * 2. 품목 판매 정보를 순회한다.
+ * 3. 특정 품목이 구매하려는 품목에 없으면, 일부 데이터를 초기화한다.
+ * 4. 다음 품목으로 이동하면서 맨 앞의 품목은 1을 더하고 현재 품목은 1을 빼준다.
+ * 5. 구매하려는 품목들의 수량이 모두 0이라면, 날짜를 센다.
+ */
+class Solution {
+    fun solution(want: Array<String>, number: IntArray, discount: Array<String>): Int {
+        var answer: Int = 0
+        val map = hashMapOf<String, Int>()
+        var index = 0
+        var days = 1
+
+        fun initialize() {
+            want.forEachIndexed { index, product -> map[product] = number[index] }
+        }
+
+        initialize()
+
+        while (index in discount.indices) {
+            val product = discount[index]
+
+            if (!map.contains(product)) {
+                initialize()
+
+                index++
+                days = 1
+
+                continue
+            }
+
+            map[product] = map[product]!! - 1
+
+            if (days > 10 && map.contains(discount[index - 10])) {
+                map[discount[index - 10]] = map[discount[index - 10]]!! + 1
+            }
+
+            if (map.all { it.value == 0 }) {
+                answer++
+            }
+
+            index++
+            days++
+        }
+
+        return answer
+    }
+}
+
+fun main() {
+    println(
+        Solution().solution(
+            want = arrayOf("banana", "apple", "rice", "pork", "pot"),
+            number = intArrayOf(3, 2, 2, 2, 1),
+            discount = arrayOf(
+                "chicken", "apple", "apple", "banana", "rice",
+                "apple", "pork", "banana", "pork", "rice",
+                "pot", "banana", "apple", "banana"
+            )
+        )
+    )
+    println(
+        Solution().solution(
+            want = arrayOf("apple"),
+            number = intArrayOf(10),
+            discount = arrayOf(
+                "banana", "banana", "banana", "banana", "banana",
+                "banana", "banana", "banana", "banana", "banana"
+            )
+        )
+    )
+}
