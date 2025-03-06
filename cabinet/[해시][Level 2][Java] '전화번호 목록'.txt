@@ -7,86 +7,43 @@ import java.util.*;
  * <h5>풀이</h5>
  * <ul>
  * <li>주어진 N개의 번호들 중, 하나의 번호가 다른 번호의 접두사로 존재하는지를 찾는 문제이다.</li>
- * <li>아래와 같은 방법으로 해결했다.</li>
  * <ol>
- *     <li>번호들을 역순으로 정렬한다.</li>
- *     <li>저장된 번호와 한자리씩 비교하면서 접두사인지 판단한다.</li>
- *     <li>만약 접두사가 아니라고 판단되면 한자리씩 저장하기 시작한다.</li>
+ *     <li>번호들을 사전적으로 정렬한다.</li>
+ *     <li>번호들을 순회하며 직전의 번호 길이만큼 현재의 번호 비교하여 접두사인지 찾는다.</li>
  * </ol>
- * <li>효율성 테스트까지 모두 통과했으나,
- * 문자열 정렬의 특성을 알지 못해 출제 의도에 벗어난 과한 방법으로 풀었다.</li>
  * </ul>
  */
 public class Solution {
-    public static void main(String[] args) {
-        System.out.println(solution(new String[]{"119", "97674223", "1195524421"}));
-        System.out.println(solution(new String[]{"123", "456", "789"}));
-        System.out.println(solution(new String[]{"12", "123", "1235", "567", "88"}));
-    }
-
-    public static boolean solution(String[] phone_book) {
+    public boolean solution(String[] phone_book) {
         boolean answer = true;
-        HashMap<Integer, Node> nodes = new HashMap<>();
+        String last = phone_book[0];
 
-        Arrays.sort(phone_book, Comparator.reverseOrder());
+        Arrays.sort(phone_book, String::compareTo);
 
-        for (String p: phone_book) {
-            int num = p.charAt(0);
-            Node node = nodes.getOrDefault(num, null);
+        for (int i = 1; i < phone_book.length; i++) {
+            String phone = phone_book[i];
 
-            if (node == null) {
-                node = new Node(p);
+            if (last.length() > phone.length()) {
+                last = phone;
 
-                nodes.put(num, node);
-            } else {
-                boolean isPrefix = node.isPrefix(p);
+                continue;
+            } else if (last.equals(phone.substring(0, last.length()))) {
+                answer = false;
 
-                if (isPrefix) {
-                    return false;
-                }
+                break;
             }
+
+            last = phone;
         }
 
         return answer;
     }
 
-    private static class Node {
-        int num;
-        HashMap<Integer, Node> nodes = new HashMap<>();
-
-        Node(String phone) {
-            String nextPhone = phone.substring(1);
-            num = phone.charAt(0);
-
-            if (nextPhone.isEmpty()) {
-                return;
-            }
-
-            nodes.put((int) nextPhone.charAt(0), new Node(nextPhone));
-        }
-
-        public boolean isPrefix(String phone) {
-            if (!phone.isEmpty() && num == phone.charAt(0)) {
-                String nextPhone = phone.substring(1);
-
-                if (nextPhone.isEmpty()) {
-                    return true;
-                }
-
-                int nextNum = nextPhone.charAt(0);
-                Node nextNode = nodes.getOrDefault(nextNum, null);
-
-                if (nextNode == null) {
-                    nodes.put(nextNum, new Node(nextPhone));
-
-                    return false;
-                }
-
-                return nextNode.isPrefix(nextPhone);
-            }
-
-            return phone.isEmpty();
-        }
+    public static void main(String[] args) {
+        System.out.println(new Solution().solution(new String[]{"119", "97674223", "1195524421"}));
+        System.out.println(new Solution().solution(new String[]{"123", "456", "789"}));
+        System.out.println(new Solution().solution(new String[]{"12", "123", "1235", "567", "88"}));
     }
 }
+
 
