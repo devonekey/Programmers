@@ -1,0 +1,73 @@
+/**
+ * # 신고 결과 받기
+ * ##### 분류: 해시
+ * ##### 언어: Kotlin
+ * ##### 풀이
+ *
+ * 유저와 유저가 신고한 대상이 각각 배열로 주어지고 신고로 인한 이용 정지 임계치 k가 주어진다.
+ *
+ * 특정 유저가 k 번 이상 신고를 당하면 신고한 유저에 정지 사실을 메일을 보내는 데,
+ * 이 때 유저에 따른 메일 발송 건수를 구하는 문제이다.
+ *
+ * (단, 한 유저가 다른 유저에 중복 신고하였을 때는 1회만 신고한 것으로 간주한다.)
+ *
+ * 1. 배열을 순회하면서 신고 대상과 신고한 유저를 매핑한다.
+ * 2. 이후 매핑한 내용을 바탕으로 k 번 이상 신고당한 대상을 추려낸다.
+ * 3. 추려낸 결과를 바탕으로 신고한 유저들에게 정지 사실 메일을 발송한다.
+ */
+class Solution {
+    fun solution(id_list: Array<String>, report: Array<String>, k: Int): IntArray {
+        var answer: IntArray = IntArray(id_list.size)
+        val idMap = hashMapOf<String, Int>()
+        val reportMap = hashMapOf<String, MutableSet<String>>()
+
+        id_list.forEachIndexed { index, id -> idMap[id] = index }
+        report.forEach { r ->
+            val (to, from) = r
+                .split(" ")
+                .let { Pair<String, String>(it[1], it[0]) }
+            val set = reportMap
+                .getOrDefault(to, mutableSetOf())
+                .apply { add(from) }
+            reportMap[to] = set
+        }
+        reportMap
+            .filter { (_, set) -> set.size >= k }
+            .flatMap { it.value }
+            .forEach { id -> answer[idMap[id]!!] = answer[idMap[id]!!] + 1 }
+
+        return answer
+    }
+}
+
+fun main() {
+    println(
+        Solution()
+            .solution(
+                id_list = arrayOf("muzi", "frodo", "apeach", "neo"),
+                report = arrayOf(
+                    "muzi frodo",
+                    "apeach frodo",
+                    "frodo neo",
+                    "muzi neo",
+                    "apeach muzi"
+                ),
+                k = 2
+            )
+            .joinToString(separator = ", ", prefix = "[", postfix = "]")
+    )
+    println(
+        Solution()
+            .solution(
+                id_list = arrayOf("con", "ryan"),
+                report = arrayOf(
+                    "ryan con",
+                    "ryan con",
+                    "ryan con",
+                    "ryan con"
+                ),
+                k = 3
+            )
+            .joinToString(separator = ", ", prefix = "[", postfix = "]")
+    )
+}
