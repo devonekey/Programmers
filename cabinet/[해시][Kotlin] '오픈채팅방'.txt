@@ -1,0 +1,61 @@
+/**
+ * # 오픈채팅방
+ * ##### 분류: 해시
+ * ##### 언어: Kotlin
+ * ##### 풀이
+ *
+ * 명령어, 유저 아이디, 닉네임 정보가 문자 배열로 주어지고,
+ * 명령어를 실행한 후 최종적으로 채팅방에 어떻게 보이는지를 구성하는 문제다.
+ *
+ * 1. 문자 배열을 순회하면서 명령어, 유저 아이디, 닉네임 별로 나누고
+ * 유저 아이디와 닉네임을 매핑한다.
+ * 2. 명령어에 따라 유저의 닉네임을 가져와 채팅을 구성한다.
+ */
+class Solution {
+    fun solution(record: Array<String>): Array<String> {
+        val map = hashMapOf<String, String>()
+        val answer = record.map { r ->
+            val (command, uid, nickname) = r.split(" ").let {
+                Triple<String, String, String?>(
+                    first = it[0],
+                    second = it[1],
+                    third = it.getOrNull(2)
+                )
+            }
+
+            if (command == "Enter" || command == "Change") {
+                map[uid] = nickname!!
+            }
+
+            Pair(command, uid)
+        }.filter { (command, _) ->
+            command != "Change"
+        }.map { (command, uid) ->
+            when (command) {
+                "Enter" -> "${map[uid]}님이 들어왔습니다."
+                "Leave" -> "${map[uid]}님이 나갔습니다."
+                else -> ""
+            }
+        }.toTypedArray()
+
+        return answer
+    }
+}
+
+fun main() {
+    println(
+        Solution().solution(
+            record = arrayOf(
+                "Enter uid1234 Muzi",
+                "Enter uid4567 Prodo",
+                "Leave uid1234",
+                "Enter uid1234 Prodo",
+                "Change uid4567 Ryan"
+            )
+        ).joinToString(
+            separator = ", ",
+            prefix = "[",
+            postfix = "]"
+        )
+    )
+}
