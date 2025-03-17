@@ -1,0 +1,77 @@
+import java.util.*
+
+/**
+ * # 단어 변환
+ * ##### 분류: 깊이/너비 우선 탐색
+ * ##### 난이도: Level 3
+ * ##### 언어: Kotlin
+ * ##### 풀이
+ *
+ * 첫 단어(begin)에서 시작하여 한 글자씩 변경하여 목표 단어(target)까지 도달하는 문제이다.
+ *
+ * (한 글자씩 변경할 때 변경한 단어가 주어진 문자 배열(words)에 존재해야 한다.)
+ *
+ * 1. 주어진 문자 배열에 목표 단어가 없으면 도달할 수 없다고 간주하고 0을 반환한다.
+ * 2. 너비 우선 탐색을 위한 큐(queue)를 준비한다.
+ * 3. 큐를 순회하면서 하나를 꺼낸다.
+ * (더 이상 꺼낼 수 없을 때까지 반복한다.)
+ * 4. 꺼낸 단어가 목표 단어와 일치하는지 점검하고, 일치하면 해당 단어로 오기까지 몇 단계를 거쳤는지 반환한다.
+ * 5. 꺼낸 단어를 문자 배열과 비교하여 한 글자만 변경하여 만들 수 있는지 확인하고,
+ * 변경할 수 있다면 모두 큐에 넣고 몇 단계를 거쳤는지 저장한다.
+ */
+class Solution {
+    fun solution(begin: String, target: String, words: Array<String>): Int {
+        var answer = 0
+
+        if (target !in words) {
+            return 0
+        }
+
+        val visit = hashMapOf<String, Int>().apply {
+            put(begin, 0)
+            putAll(pairs = words.map { word -> word to 0 })
+        }
+        val queue = ArrayDeque<String>().apply { add(begin) }
+
+        while (queue.isNotEmpty()) {
+            val current = queue.poll()
+
+            if (current == target) {
+                answer = visit.getOrDefault(current, 0)
+
+                break
+            }
+
+            words.filter { word -> current.isConvertible(word) && visit[word] == 0 }
+                .forEach { word ->
+                    visit[word] = visit.getOrDefault(current, 0) + 1
+
+                    queue.add(word)
+                }
+        }
+
+        return answer
+    }
+
+    fun String.isConvertible(to: String): Boolean =
+        this.toCharArray()
+            .filterIndexed { index, c -> c != to[index] }
+            .count() == 1
+}
+
+fun main() {
+    println(
+        Solution().solution(
+            begin = "hit",
+            target = "cog",
+            words = arrayOf("hot", "dot", "dog", "lot", "log", "cog"),
+        )
+    )
+    println(
+        Solution().solution(
+            begin = "hit",
+            target = "cog",
+            words = arrayOf("hot", "dot", "dog", "lot", "log"),
+        )
+    )
+}
