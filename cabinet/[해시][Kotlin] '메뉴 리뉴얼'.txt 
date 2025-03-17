@@ -1,0 +1,119 @@
+import kotlin.collections.*
+import kotlin.math.*
+
+/**
+ * # 메뉴 리뉴얼
+ * ##### 분류: 해시
+ * ##### 언어: Kotlin
+ * ##### 풀이
+ *
+ * 손님들이 주문한 메뉴들(orders)과 손님들이 공통으로 가장 많이 주문한 메뉴들로 코스를 만드려고 할 때,
+ * 메뉴들 개수(course)에 부합한 코스들을 구하는 문제이다.
+ *
+ * (공통으로 많이 주문한 메뉴 코스들이 여러 개라면, 모두 포함시킨다.)
+ *
+ * 1. 손님들이 주문한 메뉴들을 순회하면서 부분 집합을 구해 모든 가능한 코스(candidateMap)를 만든다.
+ * 2. 이후 모든 가능한 코스를 순회하면서 코스들의 메뉴 개수가 course에 속하는지,
+ * 또 최소 두 사람에게서 등장한 것인지 확인하고 해당 메뉴 개수에서 가장 많이 등장한 횟수를 기억한다.(maxOrderedMap)
+ * 3. 다시 모든 가능한 코스를 순회하면서 가장 많이 등장한 코스인지 확인하고 정렬한다.
+ */
+class Solution {
+    fun solution(orders: Array<String>, course: IntArray): Array<String> {
+        val candidateMap = hashMapOf<String, Int>()
+        val maxOrderedMap = hashMapOf<Int, Int>()
+
+        orders.forEachIndexed { i, order ->
+            for (k in 2..order.length) {
+                combine(
+                    origins = order.toCharArray(),
+                    n = order.length,
+                    k = k,
+                    cache = CharArray(k),
+                    start = 0,
+                    current = 0,
+                    map = candidateMap
+                )
+            }
+        }
+        candidateMap.forEach { candidate, count ->
+            val length = candidate.length
+
+            if (length !in course || count < 2) {
+                return@forEach
+            }
+
+            maxOrderedMap[length] = max(maxOrderedMap.getOrDefault(length, 0), count)
+        }
+
+        return candidateMap.filter { (candidate, count) -> maxOrderedMap[candidate.length] == count }
+            .keys
+            .sorted()
+            .toTypedArray()
+    }
+
+    fun combine(
+        origins: CharArray,
+        n: Int,
+        k: Int,
+        cache: CharArray,
+        start: Int,
+        current: Int,
+        map: HashMap<String, Int>
+    ) {
+        if (current == k) {
+            val order = cache.sorted().joinToString(separator = "")
+            map[order] = map.getOrDefault(order, 0) + 1
+
+            return
+        }
+
+        for (i in start until n) {
+            cache[current] = origins[i]
+
+            combine(
+                origins = origins,
+                n = n,
+                k = k,
+                cache = cache.copyOf(k),
+                start = i + 1,
+                current = current + 1,
+                map = map
+            )
+        }
+    }
+}
+
+fun main() {
+    println(
+        Solution()
+            .solution(
+                orders = arrayOf("ABCFG", "AC", "CDE", "ACDE", "BCFG", "ACDEH"),
+                course = intArrayOf(2, 3, 4)
+            )
+            .joinToString(separator = ", ", prefix = "[", postfix = "]")
+    )
+    println(
+        Solution()
+            .solution(
+                orders = arrayOf("ABCDE", "AB", "CD", "ADE", "XYZ", "XYZ", "ACD"),
+                course = intArrayOf(2, 3, 5)
+            )
+            .joinToString(separator = ", ", prefix = "[", postfix = "]")
+    )
+    println(
+        Solution()
+            .solution(
+                orders = arrayOf("XYZ", "XWY", "WXA"),
+                course = intArrayOf(2, 3, 4)
+            )
+            .joinToString(separator = ", ", prefix = "[", postfix = "]")
+    )
+    println(
+        Solution()
+            .solution(
+                orders = arrayOf("ABCD", "ABCD", "ABCD"),
+                course = intArrayOf(2, 3, 4)
+            )
+            .joinToString(separator = ", ", prefix = "[", postfix = "]")
+    )
+}
